@@ -38,7 +38,7 @@ $(function () {
     var query = $.getUrlParam('q');
     if (!!query) {
         try {
-            query = decodeURIComponent(query);
+            query = Base64.decode(query);
         } catch (e) {
             console.log(e);
         }
@@ -109,7 +109,7 @@ $(function () {
         } else {
             $tips.html('↓↓↓ 复制下面的链接，教伸手党使用Google');
             $('#output').fadeIn();
-            $urlOutput.val(window.location.origin + window.location.pathname + '?q=' + encodeURIComponent(question)).focus().select();
+            $urlOutput.val(window.location.origin + window.location.pathname + '?q=' + Base64.encode(question)).focus().select();
         }
         return false;
     });
