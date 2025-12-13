@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Let Me Search That For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-1: #0f172a;
+      --bg-2: #0b1224;
+      --panel: rgba(255, 255, 255, 0.04);
+      --border: rgba(255, 255, 255, 0.08);
+      --glow: rgba(93, 135, 255, 0.25);
+      --text: #e8edf7;
+      --muted: #9fb0d3;
+      --accent-baidu: linear-gradient(135deg, #4e6ef2, #6a8dff);
+      --accent-google: linear-gradient(135deg, #4285f4, #34a853 45%, #fbbc05 70%, #ea4335);
+      --accent-bing: linear-gradient(135deg, #13c3a8, #1b9fff);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 18px 64px;
+      background: radial-gradient(circle at 15% 20%, rgba(78, 110, 242, 0.15), transparent 35%),
+                  radial-gradient(circle at 85% 10%, rgba(19, 195, 168, 0.12), transparent 30%),
+                  radial-gradient(circle at 70% 75%, rgba(234, 67, 53, 0.1), transparent 40%),
+                  linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, #0b1020);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 38px 38px;
+      opacity: 0.35;
+      pointer-events: none;
+      mix-blend-mode: lighten;
+    }
+
+    .frame {
+      position: relative;
+      width: min(1200px, 100%);
+      backdrop-filter: blur(8px);
+      z-index: 1;
+    }
+
+    header {
+      max-width: 760px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--panel);
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .eyebrow span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4e6ef2, #34a853, #ea4335);
+      box-shadow: 0 0 14px rgba(78, 110, 242, 0.6);
+    }
+
+    h1 {
+      margin: 16px 0 12px;
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 640px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .portal {
+      position: relative;
+      padding: 22px 22px 20px;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.03);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+      overflow: hidden;
+    }
+
+    .portal::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 45%),
+                  radial-gradient(circle at 80% 0%, rgba(255,255,255,0.05), transparent 40%);
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events: none;
+    }
+
+    .portal:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.45), 0 10px 36px var(--glow);
+    }
+
+    .portal:hover::before {
+      opacity: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      color: #0c1222;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.01em;
+      background: #fff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .chip i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .portal h3 {
+      margin: 14px 0 6px;
+      font-size: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    .portal p {
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .portal:hover .cta {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(4px);
+    }
+
+    .cta svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    footer .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.35);
+      display: inline-block;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 32px 16px 48px;
+      }
+      h1 {
+        font-size: clamp(28px, 8vw, 34px);
+      }
+      .grid {
+        gap: 14px;
+      }
+      .portal {
+        padding: 18px 18px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+
+    <section class="grid" aria-label="搜索入口">
+      <a class="portal" href="Baidu">
+        <div class="chip" style="background: #fff; color: #0f1c3f;">
+          <i style="background: #4e6ef2;"></i> Baidu
+        </div>
+        <h3>让我帮你百度一下</h3>
+        <p>国产味儿十足的经典入口，界面与百度搜索一致，适合分享给习惯用百度的朋友。</p>
+        <span class="cta">进入 Baidu
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+
+      <a class="portal" href="Google">
+        <div class="chip" style="background: #fff; color: #0d152b;">
+          <i style="background: linear-gradient(135deg,#4285f4,#34a853,#fbbc05,#ea4335);"></i> Google
+        </div>
+        <h3>Let Me Google That For You</h3>
+        <p>保留 Google 风格的动画和交互，生成一条链接，就能让对方亲自看到“搜索的全过程”。</p>
+        <span class="cta">进入 Google
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+
+      <a class="portal" href="Bing">
+        <div class="chip" style="background: #fff; color: #062019;">
+          <i style="background: linear-gradient(135deg,#13c3a8,#1b9fff);"></i> Bing
+        </div>
+        <h3>Ask and it is given</h3>
+        <p>微光动画与微软系配色，链接生成简单直接，适合需要快速“点到为止”的场景。</p>
+        <span class="cta">进入 Bing
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M13 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </a>
+    </section>
+  </div>
+</body>
+</html>

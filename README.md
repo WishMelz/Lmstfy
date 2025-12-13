@@ -5,9 +5,9 @@
 
 ### 在线演示
 
-[🔍 让我帮你百度一下？Let Me Baidu That For You](https://baidu.lvshuncai.com/)   
-[🔍 让我帮你 Google 一下？Let Me Google That For You](https://google.lvshuncai.com/)   
-[🔍 有求必应？Ask and it is given](https://bing.lvshuncai.com/)  
+[🔍 让我帮你百度一下？Let Me Baidu That For You](https://shp.xzxo.cn/Baidu)   
+[🔍 让我帮你 Google 一下？Let Me Google That For You](https://shp.xzxo.cn/Google)   
+[🔍 有求必应？Ask and it is given](https://shp.xzxo.cn/Bing)  
 
 
 ### 来源项目
